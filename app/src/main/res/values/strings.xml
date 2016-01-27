@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">SelectOrTakeAPhoto</string>
+    <string name="pick_image_intent_text">Select Or Pick a Photo</string>
+</resources>
