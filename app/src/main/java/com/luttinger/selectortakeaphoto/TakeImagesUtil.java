@@ -15,6 +15,7 @@ import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.util.Log;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -83,13 +84,23 @@ public class TakeImagesUtil {
             bm = getImageResized(context, selectedImage);
             int rotation = getRotation(context, selectedImage, isCamera);
             bm = rotate(bm, rotation);
+
+
         }
         return bm;
+    }
+
+    public static Uri getImageUri(Context inContext, Bitmap inImage) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "croppedImage", null);
+        return Uri.parse(path);
     }
 
     public static Uri getImageUriFromResult(Context context, int resultCode, Intent imageReturnedIntent) {
         File imageFile = getTempFile(context);
         Uri selectedImage = null;
+        Bitmap bm = null;
         if (resultCode == Activity.RESULT_OK) {
             boolean isCamera = (imageReturnedIntent == null ||
                     imageReturnedIntent.getData() == null  ||
@@ -100,6 +111,11 @@ public class TakeImagesUtil {
                 selectedImage = imageReturnedIntent.getData();
             }
             Log.d(TAG, "selectedImage: " + selectedImage);
+
+            bm = getImageResized(context, selectedImage);
+            int rotation = getRotation(context, selectedImage, isCamera);
+            bm = rotate(bm, rotation);
+            selectedImage = getImageUri(context,bm);
 
         }
         return selectedImage;
